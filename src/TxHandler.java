@@ -32,5 +32,8 @@ public class TxHandler {
 		// IMPLEMENT THIS
 		return null;
 	}
+	
+	/* Returns the current UTXO pool.If no outstanding UTXOs, returns an empty (non-null) UTXOPool object. */
+	public UTXOPool getUTXOPool();
 
 } 
