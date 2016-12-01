@@ -46,8 +46,10 @@ public class TxHandler {
 	    else{
 	        return new UTXOPool();
 	    }
+	    
+	    //should never reach this point
 	    System.out.println("error: getUTXOPool in TxHandler.java");
-        return null; //should never reach this point
+        return null;
     }
 
 } 
