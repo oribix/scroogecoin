@@ -41,12 +41,14 @@ public class BlockChain {
     */
    public BlockChain(Block genesisBlock) {
       // IMPLEMENT THIS
+       
    }
 
    /* Get the maximum height block
     */
    public Block getMaxHeightBlock() {
       // IMPLEMENT THIS
+      return null;
    }
    
    /* Get the UTXOPool for mining a new block on top of 
@@ -54,12 +56,14 @@ public class BlockChain {
     */
    public UTXOPool getMaxHeightUTXOPool() {
       // IMPLEMENT THIS
+      return null;
    }
    
    /* Get the transaction pool to mine a new block
     */
    public TransactionPool getTransactionPool() {
       // IMPLEMENT THIS
+      return null;
    }
 
    /* Add a block to block chain if it is valid.
@@ -72,11 +76,13 @@ public class BlockChain {
     */
    public boolean addBlock(Block b) {
        // IMPLEMENT THIS
+       return false;
    }
 
    /* Add a transaction in transaction pool
     */
    public void addTransaction(Transaction tx) {
       // IMPLEMENT THIS
+      return;
    }
 }
