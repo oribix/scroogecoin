@@ -27,13 +27,19 @@ public class TxHandler {
 	   and false otherwise.
 	 */
 	public boolean isValidTx(Transaction tx) {
-		// (1) Checks all outputs against 
+		boolean isValid = true;
+		
+		// (1) Checks all outputs against public ledger's outputs
 		for (Transaction.Output output : tx.getOutputs()) {
 			if (!publicLedger.containsOutput(output))
-				return false;
+				isValid = false;
 		}
 		
-		return true;
+		if (isValid) {
+			
+		}
+		
+		return isValid;
 	}
 
 	/* Handles each epoch by receiving an unordered array of proposed 
