@@ -1,16 +1,18 @@
 public class TxHandler {
-    
+
+	UTXOPool publicLedger;
+
     //stub function
     private boolean outstandingUTXOexists(){
         return false;
     }
-    
+	
 	/* Creates a public ledger whose current UTXOPool (collection of unspent 
 	 * transaction outputs) is utxoPool. This should make a defensive copy of 
 	 * utxoPool by using the UTXOPool(UTXOPool uPool) constructor.
 	 */
 	public TxHandler(UTXOPool utxoPool) {
-		// IMPLEMENT THIS
+		publicLedger = new UTXOPool(utxoPool);
 	}
 
 	/* Returns true if 
@@ -22,7 +24,6 @@ public class TxHandler {
 	        its output values;
 	   and false otherwise.
 	 */
-
 	public boolean isValidTx(Transaction tx) {
 		// IMPLEMENT THIS
 		return false;
