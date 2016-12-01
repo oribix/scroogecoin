@@ -1,5 +1,10 @@
 public class TxHandler {
-
+    
+    //stub function
+    private boolean outstandingUTXOexists(){
+        return false;
+    }
+    
 	/* Creates a public ledger whose current UTXOPool (collection of unspent 
 	 * transaction outputs) is utxoPool. This should make a defensive copy of 
 	 * utxoPool by using the UTXOPool(UTXOPool uPool) constructor.
@@ -34,6 +39,15 @@ public class TxHandler {
 	}
 	
 	/* Returns the current UTXO pool.If no outstanding UTXOs, returns an empty (non-null) UTXOPool object. */
-	public UTXOPool getUTXOPool();
+	public UTXOPool getUTXOPool() {
+	    if(outstandingUTXOexists()){
+	        //return current UTXO pool
+	    }
+	    else{
+	        return new UTXOPool();
+	    }
+	    System.out.println("error: getUTXOPool in TxHandler.java");
+        return null; //should never reach this point
+    }
 
 } 
