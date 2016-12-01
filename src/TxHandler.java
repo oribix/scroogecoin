@@ -16,28 +16,40 @@ public class TxHandler {
 	 * (1) all outputs claimed by tx are in the current UTXO pool, 
 	 * (2) the signatures on each input of tx are valid, 
 	 * (3) no UTXO is claimed multiple times by tx, 
-	 * (4) all of tx’s output values are non-negative, and
-	 * (5) the sum of tx’s input values is greater than or equal to the sum of   
+	 * (4) all of tx's output values are non-negative, and
+	 * (5) the sum of tx's input values is greater than or equal to the sum of   
 	        its output values;
 	   and false otherwise.
 	 */
 	public boolean isValidTx(Transaction tx) {
 		boolean isValid = true;
+		ArrayList<UTXO> UTXOList = publicLedger.getAllUTXO();
+		ArrayList<Transaction.Output> txOutputs = tx.getOutputs();
+		double txInputSum = 0;
+		double txOutputSum = 0;
+		
 		
 		// (1) Checks all outputs against public ledger's outputs
-		for (Transaction.Output output : tx.getOutputs()) {
-			if (!publicLedger.containsOutput(output))
+		// (4) all of tx's output values are non-negative
+		for (Transaction.Output output : txOutputs) {
+			boolean isNegative = output.value < 0;
+			txOutputSum += output.value;
+		    if (isNegative || !publicLedger.containsOutput(output))
 				isValid = false;
 		}
-		
 		// (2) the signatures on each input of tx are valid,
 		if (isValid) {
 			
 		}
-		// (3) no UTXO is claimed multiple times by tx, 
-		// (4) all of tx’s output values are non-negative, and
-		// (5) the sum of tx’s input values is greater than or equal to the sum of   
+		// (3) no UTXO is claimed multiple times by tx,
+		if (isValid){
+		    
+		}
+		// (5) the sum of tx's input values is greater than or equal to the sum of   
 		//     its output values;
+		if (isValid){
+            
+        }
 		
 		return isValid;
 	}
