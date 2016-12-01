@@ -46,6 +46,10 @@ public class UTXOPool {
       return H.containsKey(utxo);
    }
    
+   public boolean containsOutput(Transaction.Output txOut) {
+	   return H.containsValue(txOut);
+   }
+   
    // Returns an ArrayList of all UTXOs in the pool
    public ArrayList<UTXO> getAllUTXO() {
       Set<UTXO> setUTXO = H.keySet();

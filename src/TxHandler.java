@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class TxHandler {
 
 	UTXOPool publicLedger;
@@ -25,8 +27,13 @@ public class TxHandler {
 	   and false otherwise.
 	 */
 	public boolean isValidTx(Transaction tx) {
-		// IMPLEMENT THIS
-		return false;
+		// (1) Checks all outputs against 
+		for (Transaction.Output output : tx.getOutputs()) {
+			if (!publicLedger.containsOutput(output))
+				return false;
+		}
+		
+		return true;
 	}
 
 	/* Handles each epoch by receiving an unordered array of proposed 
