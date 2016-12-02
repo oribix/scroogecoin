@@ -95,7 +95,22 @@ public class TxHandler {
 		ArrayList<Transaction> acceptedTxs = new ArrayList<Transaction>(); 
 		for(Transaction tx : possibleTxs){
 		    if (isValidTx(tx)) {
-                acceptedTxs.add(tx);
+                //add tx to list of accepted transactions
+		        acceptedTxs.add(tx);
+		        
+		        //remove claimed UTXOs from the public ledger
+                for (Transaction.Input input : tx.getInputs()) {
+                    UTXO claimedOutput = new UTXO(input.prevTxHash, input.outputIndex);
+                    publicLedger.removeUTXO(claimedOutput);
+                }
+                
+                //add new UTXOs to the public ledger
+                byte[] txHash = tx.getHash();
+                ArrayList<Transaction.Output> txOutputs = tx.getOutputs(); 
+                for(Transaction.Output output : txOutputs){
+                    UTXO utxo = new UTXO(txHash, txOutputs.indexOf(output));
+                    publicLedger.addUTXO(utxo, output);
+                }
             }
 		}
 		return acceptedTxs.toArray(new Transaction[acceptedTxs.size()]);
