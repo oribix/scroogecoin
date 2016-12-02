@@ -27,16 +27,23 @@ public class TxHandler {
 		double txInputSum = 0;
 		double txOutputSum = 0;
 		
+		//create a list of claimed outputs
+		ArrayList<UTXO> claimedOutputs = new ArrayList<UTXO>();
+		for (Transaction.Input input : tx.getInputs()) {
+            UTXO claimedOutput = new UTXO(input.prevTxHash, input.outputIndex);
+            claimedOutputs.add(claimedOutput);
+        }
 		
-		// (1) Checks all outputs against public ledger's outputs
-//		for (Transaction.Output output : tx.getOutputs()) {
-//            boolean isNegative = output.value < 0;
-//            txOutputSum += output.value;
-//            if (!publicLedger.containsOutput(output))
-//                isValid = false;
-//        }
 		
-		// (2) the signatures on each input of tx are valid,
+		// (1) all outputs claimed by tx are in the current UTXO pool,
+		for (UTXO claimedOutput : claimedOutputs) {
+		    if(!publicLedger.contains(claimedOutput)){
+		        isValid = false;
+		        break;
+		    }
+        }
+		
+		// (2) the signatures on each input of tx are valid
 		if (isValid) {
 			
 		}
@@ -55,17 +62,17 @@ public class TxHandler {
 		
 		// (5) the sum of tx's input values is greater than or equal to the sum of   
 		//     its output values;
-		//if (isValid){
-        //    for(Transaction.Input input: tx.getInputs()){
-        //        for(UTXO utxo : UTXOList){
-        //            if(input.prevTxHash == utxo.getTxHash()){
-        //                txInputSum += publicLedger.getTxOutput(utxo).value;
-        //            }
-        //        }
-        //    }
-        //    
-        //    if(txInputSum < txOutputSum) isValid = false;
-        //}
+//		if (isValid){
+//            for(Transaction.Input input: tx.getInputs()){
+//                for(UTXO utxo : UTXOList){
+//                    if(input.prevTxHash == utxo.getTxHash()){
+//                        txInputSum += publicLedger.getTxOutput(utxo).value;
+//                    }
+//                }
+//            }
+//            
+//            if(txInputSum < txOutputSum) isValid = false;
+//        }
 		
 		return isValid;
 	}
