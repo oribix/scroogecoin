@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TxHandler {
 
@@ -49,7 +50,11 @@ public class TxHandler {
 		}
 		// (3) no UTXO is claimed multiple times by tx,
 		if (isValid){
-		    
+		    HashSet<UTXO> utxoSet = new HashSet<>();
+		    for(UTXO claimedOutput: claimedOutputs){
+		        utxoSet.add(claimedOutput);
+		    }
+		    if(utxoSet.size() < claimedOutputs.size()) isValid = false;
 		}
 		
 		// (4) all of tx's output values are non-negative
