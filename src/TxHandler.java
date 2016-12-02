@@ -23,9 +23,9 @@ public class TxHandler {
 	 */
 	public boolean isValidTx(Transaction tx) {
 		boolean isValid = true;
-		ArrayList<UTXO> UTXOList = publicLedger.getAllUTXO();
+		
 		double txInputSum = 0;
-		double txOutputSum = 0;
+        double txOutputSum = 0;
 		
 		//create a list of claimed outputs
 		ArrayList<UTXO> claimedOutputs = new ArrayList<UTXO>();
@@ -62,17 +62,14 @@ public class TxHandler {
 		
 		// (5) the sum of tx's input values is greater than or equal to the sum of   
 		//     its output values;
-//		if (isValid){
-//            for(Transaction.Input input: tx.getInputs()){
-//                for(UTXO utxo : UTXOList){
-//                    if(input.prevTxHash == utxo.getTxHash()){
-//                        txInputSum += publicLedger.getTxOutput(utxo).value;
-//                    }
-//                }
-//            }
-//            
-//            if(txInputSum < txOutputSum) isValid = false;
-//        }
+		if (isValid){
+		    //get sum of transaction inputs
+	        for(UTXO claimedOutput : claimedOutputs){
+	            txInputSum += publicLedger.getTxOutput(claimedOutput).value;
+	        }
+	        
+            if(txInputSum < txOutputSum) isValid = false;
+        }
 		
 		return isValid;
 	}
