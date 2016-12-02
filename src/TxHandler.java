@@ -24,19 +24,18 @@ public class TxHandler {
 	public boolean isValidTx(Transaction tx) {
 		boolean isValid = true;
 		ArrayList<UTXO> UTXOList = publicLedger.getAllUTXO();
-		ArrayList<Transaction.Output> txOutputs = tx.getOutputs();
 		double txInputSum = 0;
 		double txOutputSum = 0;
 		
 		
 		// (1) Checks all outputs against public ledger's outputs
-		// (4) all of tx's output values are non-negative
-		for (Transaction.Output output : txOutputs) {
-			boolean isNegative = output.value < 0;
-			txOutputSum += output.value;
-		    if (isNegative || !publicLedger.containsOutput(output))
-				isValid = false;
-		}
+//		for (Transaction.Output output : tx.getOutputs()) {
+//            boolean isNegative = output.value < 0;
+//            txOutputSum += output.value;
+//            if (!publicLedger.containsOutput(output))
+//                isValid = false;
+//        }
+		
 		// (2) the signatures on each input of tx are valid,
 		if (isValid) {
 			
@@ -45,11 +44,28 @@ public class TxHandler {
 		if (isValid){
 		    
 		}
+		
+		// (4) all of tx's output values are non-negative
+        for (Transaction.Output output : tx.getOutputs()) {
+            boolean isNegative = output.value < 0;
+            txOutputSum += output.value;
+            if (isNegative)//  || !publicLedger.containsOutput(output)
+                isValid = false;
+        }
+		
 		// (5) the sum of tx's input values is greater than or equal to the sum of   
 		//     its output values;
-		if (isValid){
-            
-        }
+		//if (isValid){
+        //    for(Transaction.Input input: tx.getInputs()){
+        //        for(UTXO utxo : UTXOList){
+        //            if(input.prevTxHash == utxo.getTxHash()){
+        //                txInputSum += publicLedger.getTxOutput(utxo).value;
+        //            }
+        //        }
+        //    }
+        //    
+        //    if(txInputSum < txOutputSum) isValid = false;
+        //}
 		
 		return isValid;
 	}
