@@ -35,7 +35,6 @@ public class TxHandler {
             claimedOutputs.add(claimedOutput);
         }
 		
-		
 		// (1) all outputs claimed by tx are in the current UTXO pool,
 		for (UTXO claimedOutput : claimedOutputs) {
 		    if(!publicLedger.contains(claimedOutput)){
@@ -45,11 +44,15 @@ public class TxHandler {
         }
 		
 		// (2) the signatures on each input of tx are valid
-		if (isValid) {
-			
-		}
+		//if (isValid) {
+		//	for(Transaction.Input input : tx.getInputs()){
+		//	    
+		//	}
+		//}
+		
 		// (3) no UTXO is claimed multiple times by tx,
 		if (isValid){
+		    //Convert to set to remove repetitions
 		    HashSet<UTXO> utxoSet = new HashSet<>();
 		    for(UTXO claimedOutput: claimedOutputs){
 		        utxoSet.add(claimedOutput);
@@ -58,12 +61,15 @@ public class TxHandler {
 		}
 		
 		// (4) all of tx's output values are non-negative
-        for (Transaction.Output output : tx.getOutputs()) {
-            boolean isNegative = output.value < 0;
-            txOutputSum += output.value;
-            if (isNegative)//  || !publicLedger.containsOutput(output)
-                isValid = false;
-        }
+		if(isValid){
+		    for (Transaction.Output output : tx.getOutputs()) {
+	            txOutputSum += output.value;
+	            if (output.value < 0){
+	                isValid = false;
+	                break;
+	            }
+	        }
+		}
 		
 		// (5) the sum of tx's input values is greater than or equal to the sum of   
 		//     its output values;
@@ -85,8 +91,14 @@ public class TxHandler {
 	 * and updating the current UTXO pool as appropriate.
 	 */
 	public Transaction[] handleTxs(Transaction[] possibleTxs) {
-		// IMPLEMENT THIS
-		return null;
+	    //TODO: Still need to update UTXO pool "as necessary"
+		ArrayList<Transaction> acceptedTxs = new ArrayList<Transaction>(); 
+		for(Transaction tx : possibleTxs){
+		    if (isValidTx(tx)) {
+                acceptedTxs.add(tx);
+            }
+		}
+		return acceptedTxs.toArray(new Transaction[acceptedTxs.size()]);
 	}
 	
 	/* Returns the current UTXO pool.If no outstanding UTXOs, returns an empty (non-null) UTXOPool object. */
