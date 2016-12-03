@@ -44,11 +44,16 @@ public class TxHandler {
         }
 		
 		// (2) the signatures on each input of tx are valid
-		//if (isValid) {
-		//	for(Transaction.Input input : tx.getInputs()){
-		//	    
-		//	}
-		//}
+		if (isValid) {
+			ArrayList<Transaction.Input> inputs = tx.getInputs();
+			for(int i = 0; i < inputs.size(); i++) {
+				if (!publicLedger.getTxOutput(claimedOutputs.get(i)).address.
+						verifySignature(tx.getRawDataToSign(i), inputs.get(i).signature)) {
+					isValid = false;
+					break;
+				}
+			}
+		}
 		
 		// (3) no UTXO is claimed multiple times by tx,
 		if (isValid){
