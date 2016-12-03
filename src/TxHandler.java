@@ -1,13 +1,9 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class TxHandler {
 
 	UTXOPool publicLedger;
-
-    //stub function
-    private boolean outstandingUTXOexists(){
-        return false;
-    }
 	
 	/* Creates a public ledger whose current UTXOPool (collection of unspent 
 	 * transaction outputs) is utxoPool. This should make a defensive copy of 
@@ -21,28 +17,70 @@ public class TxHandler {
 	 * (1) all outputs claimed by tx are in the current UTXO pool, 
 	 * (2) the signatures on each input of tx are valid, 
 	 * (3) no UTXO is claimed multiple times by tx, 
-	 * (4) all of tx’s output values are non-negative, and
-	 * (5) the sum of tx’s input values is greater than or equal to the sum of   
+	 * (4) all of tx's output values are non-negative, and
+	 * (5) the sum of tx's input values is greater than or equal to the sum of   
 	        its output values;
 	   and false otherwise.
 	 */
 	public boolean isValidTx(Transaction tx) {
 		boolean isValid = true;
 		
-		// (1) Checks all outputs against public ledger's outputs
-		for (Transaction.Output output : tx.getOutputs()) {
-			if (!publicLedger.containsOutput(output))
-				isValid = false;
+		double txInputSum = 0;
+        double txOutputSum = 0;
+		
+		//create a list of claimed outputs
+		ArrayList<UTXO> claimedOutputs = new ArrayList<UTXO>();
+		for (Transaction.Input input : tx.getInputs()) {
+            UTXO claimedOutput = new UTXO(input.prevTxHash, input.outputIndex);
+            claimedOutputs.add(claimedOutput);
+        }
+		
+		// (1) all outputs claimed by tx are in the current UTXO pool,
+		for (UTXO claimedOutput : claimedOutputs) {
+		    if(!publicLedger.contains(claimedOutput)){
+		        isValid = false;
+		        break;
+		    }
+        }
+		
+		// (2) the signatures on each input of tx are valid
+		//if (isValid) {
+		//	for(Transaction.Input input : tx.getInputs()){
+		//	    
+		//	}
+		//}
+		
+		// (3) no UTXO is claimed multiple times by tx,
+		if (isValid){
+		    //Convert to set to remove repetitions
+		    HashSet<UTXO> utxoSet = new HashSet<>();
+		    for(UTXO claimedOutput: claimedOutputs){
+		        utxoSet.add(claimedOutput);
+		    }
+		    if(utxoSet.size() < claimedOutputs.size()) isValid = false;
 		}
 		
-		// (2) the signatures on each input of tx are valid,
-		if (isValid) {
-			
+		// (4) all of tx's output values are non-negative
+		if(isValid){
+		    for (Transaction.Output output : tx.getOutputs()) {
+	            txOutputSum += output.value;
+	            if (output.value < 0){
+	                isValid = false;
+	                break;
+	            }
+	        }
 		}
-		// (3) no UTXO is claimed multiple times by tx, 
-		// (4) all of tx’s output values are non-negative, and
-		// (5) the sum of tx’s input values is greater than or equal to the sum of   
+		
+		// (5) the sum of tx's input values is greater than or equal to the sum of   
 		//     its output values;
+		if (isValid){
+		    //get sum of transaction inputs
+	        for(UTXO claimedOutput : claimedOutputs){
+	            txInputSum += publicLedger.getTxOutput(claimedOutput).value;
+	        }
+	        
+            if(txInputSum < txOutputSum) isValid = false;
+        }
 		
 		return isValid;
 	}
@@ -53,22 +91,34 @@ public class TxHandler {
 	 * and updating the current UTXO pool as appropriate.
 	 */
 	public Transaction[] handleTxs(Transaction[] possibleTxs) {
-		// IMPLEMENT THIS
-		return null;
+	    //TODO: Still need to update UTXO pool "as necessary"
+		ArrayList<Transaction> acceptedTxs = new ArrayList<Transaction>(); 
+		for(Transaction tx : possibleTxs){
+		    if (isValidTx(tx)) {
+                //add tx to list of accepted transactions
+		        acceptedTxs.add(tx);
+		        
+		        //remove claimed UTXOs from the public ledger
+                for (Transaction.Input input : tx.getInputs()) {
+                    UTXO claimedOutput = new UTXO(input.prevTxHash, input.outputIndex);
+                    publicLedger.removeUTXO(claimedOutput);
+                }
+                
+                //add new UTXOs to the public ledger
+                byte[] txHash = tx.getHash();
+                ArrayList<Transaction.Output> txOutputs = tx.getOutputs(); 
+                for(Transaction.Output output : txOutputs){
+                    UTXO utxo = new UTXO(txHash, txOutputs.indexOf(output));
+                    publicLedger.addUTXO(utxo, output);
+                }
+            }
+		}
+		return acceptedTxs.toArray(new Transaction[acceptedTxs.size()]);
 	}
 	
 	/* Returns the current UTXO pool.If no outstanding UTXOs, returns an empty (non-null) UTXOPool object. */
 	public UTXOPool getUTXOPool() {
-	    if(outstandingUTXOexists()){
-	        //return current UTXO pool
-	    }
-	    else{
-	        return new UTXOPool();
-	    }
-	    
-	    //should never reach this point
-	    System.out.println("error: getUTXOPool in TxHandler.java");
-        return null;
+	    return (!publicLedger.getAllUTXO().isEmpty()) ? publicLedger : new UTXOPool();
     }
 
 } 
