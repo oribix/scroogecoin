@@ -102,9 +102,9 @@ public class BlockChain {
 //    		}
 //    	}
     	
-//    	if (height > CUT_OFF_AGE + 1)
-//    		isValid = false;
-//    	
+    	if (b.height <= (height - CUT_OFF_AGE))
+    		isValid = false;
+    	
 //    	if (isValid) {
 //		    TxHandler handler = new TxHandler(b.uPool);
 //		    for (Transaction t : b.b.getTransactions()) {
@@ -142,8 +142,12 @@ public class BlockChain {
             
             H.put(new ByteArrayWrapper(b.getHash()), blockNode);
             
-            height++;
-            maxHeightBlock = blockNode;
+            //height++;
+            //maxHeightBlock = blockNode;
+            if(blockNode.height > height){
+                height = blockNode.height;
+                maxHeightBlock = blockNode;
+            }
             
             for (Transaction t : blockNode.b.getTransactions()){
             	Transaction fromTx = txPool.getTransaction(t.getHash());
