@@ -102,18 +102,18 @@ public class BlockChain {
 //    		}
 //    	}
     	
-    	//if (height > CUT_OFF_AGE + 1)
-    	//	isValid = false;
-    	
-    	//if (isValid) {
-		//    TxHandler handler = new TxHandler(maxHeightBlock.uPool);
-		//    for (Transaction t : b.getTransactions()) {
-		//    	if (!handler.isValidTx(t)) {
-		//    		isValid = false;
-		//    		break;
-		//    	}		
-		//    }
-    	//}
+//    	if (height > CUT_OFF_AGE + 1)
+//    		isValid = false;
+//    	
+//    	if (isValid) {
+//		    TxHandler handler = new TxHandler(b.uPool);
+//		    for (Transaction t : b.b.getTransactions()) {
+//		    	if (!handler.isValidTx(t)) {
+//		    		isValid = false;
+//		    		break;
+//		    	}		
+//		    }
+//    	}
         return isValid;
     }
     
@@ -144,6 +144,12 @@ public class BlockChain {
             
             height++;
             maxHeightBlock = blockNode;
+            
+            for (Transaction t : blockNode.b.getTransactions()){
+            	Transaction fromTx = txPool.getTransaction(t.getHash());
+            	if (fromTx != null)
+            		txPool.removeTransaction(t.getHash());
+            }
         }
         
         return isValid;
