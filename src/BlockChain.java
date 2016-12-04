@@ -86,7 +86,7 @@ public class BlockChain {
      * (block height 2) if blockChain height is <= CUT_OFF_AGE + 1. 
      * As soon as height > CUT_OFF_AGE + 1, you cannot create a new block at height 2.
      */
-    private boolean blockValid(Block b){
+    private boolean blockValid(BlockNode b){
     	boolean isValid = true;
     	
 //    	ArrayList<Transaction> transactions = txPool.getTransactions();
@@ -102,18 +102,18 @@ public class BlockChain {
 //    		}
 //    	}
     	
-    	if (height > CUT_OFF_AGE + 1)
-    		isValid = false;
+    	//if (height > CUT_OFF_AGE + 1)
+    	//	isValid = false;
     	
-    	if (isValid) {
-		    TxHandler handler = new TxHandler(maxHeightBlock.uPool);
-		    for (Transaction t : b.getTransactions()) {
-		    	if (!handler.isValidTx(t)) {
-		    		isValid = false;
-		    		break;
-		    	}		
-		    }
-    	}
+    	//if (isValid) {
+		//    TxHandler handler = new TxHandler(maxHeightBlock.uPool);
+		//    for (Transaction t : b.getTransactions()) {
+		//    	if (!handler.isValidTx(t)) {
+		//    		isValid = false;
+		//    		break;
+		//    	}		
+		//    }
+    	//}
         return isValid;
     }
     
@@ -121,20 +121,22 @@ public class BlockChain {
      * Return true of block is successfully added
      */
     public boolean addBlock(Block b) {
-        boolean isValid = blockValid(b);
+        UTXOPool uPool = new UTXOPool();
+        Transaction coinbase = b.getCoinbase();
+        
+        ArrayList<Transaction.Output> outputs = coinbase.getOutputs();
+        for(int i = 0; i < outputs.size(); i++){
+            UTXO utxoCoinbase = new UTXO(coinbase.getHash(), i);
+            uPool.addUTXO(utxoCoinbase, outputs.get(i));
+        }
+        
+        BlockNode blockNode = new BlockNode(b, maxHeightBlock, uPool);
+        
+        boolean isValid = blockValid(blockNode);
         
         if(isValid){
             //add block to block chain
-            UTXOPool uPool = new UTXOPool();
-            Transaction coinbase = b.getCoinbase();
             
-            ArrayList<Transaction.Output> outputs = coinbase.getOutputs();
-            for(int i = 0; i < outputs.size(); i++){
-                UTXO utxoCoinbase = new UTXO(coinbase.getHash(), i);
-                uPool.addUTXO(utxoCoinbase, outputs.get(i));
-            }
-            
-            BlockNode blockNode = new BlockNode(b, maxHeightBlock, uPool);
             
             heads.add(blockNode);
             
@@ -142,7 +144,6 @@ public class BlockChain {
             
             height++;
             maxHeightBlock = blockNode;
-            //txPool = new TransactionPool();
         }
         
         return isValid;
