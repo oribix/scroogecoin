@@ -25,8 +25,8 @@ public class TxHandler {
 	public boolean isValidTx(Transaction tx) {
 		boolean isValid = true;
 		
-		double txInputSum = 0;
-        double txOutputSum = 0;
+		double txInputSum = 0.0;
+        double txOutputSum = 0.0;
 		
 		//create a list of claimed outputs
 		ArrayList<UTXO> claimedOutputs = new ArrayList<UTXO>();
@@ -38,6 +38,7 @@ public class TxHandler {
 		// (1) all outputs claimed by tx are in the current UTXO pool,
 		for (UTXO claimedOutput : claimedOutputs) {
 		    if(!publicLedger.contains(claimedOutput)){
+//		    	System.out.println("In 1");
 		        isValid = false;
 		        break;
 		    }
@@ -49,6 +50,7 @@ public class TxHandler {
 			for(int i = 0; i < inputs.size(); i++) {
 				if (!publicLedger.getTxOutput(claimedOutputs.get(i)).address.
 						verifySignature(tx.getRawDataToSign(i), inputs.get(i).signature)) {
+//					System.out.println("In 2");
 					isValid = false;
 					break;
 				}
@@ -59,17 +61,21 @@ public class TxHandler {
 		if (isValid){
 		    //Convert to set to remove repetitions
 		    HashSet<UTXO> utxoSet = new HashSet<>();
-		    for(UTXO claimedOutput: claimedOutputs){
+		    for(UTXO claimedOutput : claimedOutputs){
 		        utxoSet.add(claimedOutput);
 		    }
-		    if(utxoSet.size() < claimedOutputs.size()) isValid = false;
+		    if(utxoSet.size() < claimedOutputs.size()) {
+//		    	System.out.println("In 3");
+		    	isValid = false;
+		    }
 		}
 		
 		// (4) all of tx's output values are non-negative
 		if(isValid){
-		    for (Transaction.Output output : tx.getOutputs()) {
+		    for (Transaction.Output output : tx.getOutputs()){
 	            txOutputSum += output.value;
-	            if (output.value < 0){
+	            if (output.value < 0.0){
+//	            	System.out.println("In 4");
 	                isValid = false;
 	                break;
 	            }
@@ -84,7 +90,10 @@ public class TxHandler {
 	            txInputSum += publicLedger.getTxOutput(claimedOutput).value;
 	        }
 	        
-            if(txInputSum < txOutputSum) isValid = false;
+            if(txInputSum < txOutputSum) {
+//            	System.out.println("In 5");
+            	isValid = false;
+            }
         }
 		
 		return isValid;
@@ -112,9 +121,9 @@ public class TxHandler {
                 //add new UTXOs to the public ledger
                 byte[] txHash = tx.getHash();
                 ArrayList<Transaction.Output> txOutputs = tx.getOutputs(); 
-                for(Transaction.Output output : txOutputs){
-                    UTXO utxo = new UTXO(txHash, txOutputs.indexOf(output));
-                    publicLedger.addUTXO(utxo, output);
+                for(int i = 0; i < txOutputs.size(); i++) {
+                    UTXO utxo = new UTXO(txHash, i);
+                    publicLedger.addUTXO(utxo, txOutputs.get(i));
                 }
             }
 		}
