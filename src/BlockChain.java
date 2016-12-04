@@ -63,23 +63,20 @@ public class BlockChain {
     /* Get the maximum height block
      */
     public Block getMaxHeightBlock() {
-        // IMPLEMENT THIS
-        return null;
+        return maxHeightBlock.b;
     }
 
     /* Get the UTXOPool for mining a new block on top of 
      * max height block
      */
     public UTXOPool getMaxHeightUTXOPool() {
-        // IMPLEMENT THIS
-        return null;
+        return maxHeightBlock.uPool;
     }
 
     /* Get the transaction pool to mine a new block
      */
     public TransactionPool getTransactionPool() {
-        // IMPLEMENT THIS
-        return null;
+        return txPool;
     }
 
     /* Add a block to block chain if it is valid.
