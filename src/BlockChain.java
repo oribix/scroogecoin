@@ -78,24 +78,38 @@ public class BlockChain {
     public TransactionPool getTransactionPool() {
         return txPool;
     }
-
-    /* Add a block to block chain if it is valid.
-     * For validity, all transactions should be valid
+    
+    //valid check for block
+    /* For validity, all transactions should be valid
      * and block should be at height > (maxHeight - CUT_OFF_AGE).
      * For example, you can try creating a new block over genesis block 
      * (block height 2) if blockChain height is <= CUT_OFF_AGE + 1. 
      * As soon as height > CUT_OFF_AGE + 1, you cannot create a new block at height 2.
+     */
+    private boolean blockValid(Block b){
+        
+        return true;
+    }
+    
+    /* Add a block to block chain if it is valid.
      * Return true of block is successfully added
      */
     public boolean addBlock(Block b) {
         // IMPLEMENT THIS
-        return false;
+        boolean isValid = blockValid(b);
+        
+        if(isValid){
+            //add block to block chain
+        }
+        
+        return isValid;
     }
 
     /* Add a transaction in transaction pool
      */
     public void addTransaction(Transaction tx) {
         // IMPLEMENT THIS
+        txPool.addTransaction(tx);
         return;
     }
 }
