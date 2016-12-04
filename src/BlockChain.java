@@ -87,9 +87,33 @@ public class BlockChain {
      * As soon as height > CUT_OFF_AGE + 1, you cannot create a new block at height 2.
      */
     private boolean blockValid(Block b){
-        boolean isValid = true;
-        
-        
+    	boolean isValid = true;
+    	
+//    	ArrayList<Transaction> transactions = txPool.getTransactions();
+//    	UTXOPool utxoPool = new UTXOPool();
+//    	
+//    	// Initialize a UTXOPool from txPool for txHandler
+//    	for (int i = 0; i < transactions.size(); i++) {
+//    		Transaction t = transactions.get(i);
+//    		ArrayList<Transaction.Output> outputs = t.getOutputs();
+//    		for (int j = 0; j < outputs.size(); j++) {
+//	    		UTXO utxo = new UTXO(t.getHash(), j);
+//	    		utxoPool.addUTXO(utxo, outputs.get(j));
+//    		}
+//    	}
+    	
+    	if (height > CUT_OFF_AGE + 1)
+    		isValid = false;
+    	
+    	if (isValid) {
+		    TxHandler handler = new TxHandler(maxHeightBlock.uPool);
+		    for (Transaction t : b.getTransactions()) {
+		    	if (!handler.isValidTx(t)) {
+		    		isValid = false;
+		    		break;
+		    	}		
+		    }
+    	}
         return isValid;
     }
     
