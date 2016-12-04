@@ -87,15 +87,16 @@ public class BlockChain {
      * As soon as height > CUT_OFF_AGE + 1, you cannot create a new block at height 2.
      */
     private boolean blockValid(Block b){
+        boolean isValid = true;
         
-        return true;
+        
+        return isValid;
     }
     
     /* Add a block to block chain if it is valid.
      * Return true of block is successfully added
      */
     public boolean addBlock(Block b) {
-        // IMPLEMENT THIS
         boolean isValid = blockValid(b);
         
         if(isValid){
@@ -108,8 +109,6 @@ public class BlockChain {
                 UTXO utxoCoinbase = new UTXO(coinbase.getHash(), i);
                 uPool.addUTXO(utxoCoinbase, outputs.get(i));
             }
-            
-            
             
             BlockNode blockNode = new BlockNode(b, maxHeightBlock, uPool);
             
