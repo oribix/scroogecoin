@@ -48,8 +48,8 @@ public class TxHandler {
 		if (isValid) {
 			ArrayList<Transaction.Input> inputs = tx.getInputs();
 			for(int i = 0; i < inputs.size(); i++) {
-				if (!publicLedger.getTxOutput(claimedOutputs.get(i)).address.
-						verifySignature(tx.getRawDataToSign(i), inputs.get(i).signature)) {
+				RSAKey publicKey = publicLedger.getTxOutput(claimedOutputs.get(i)).address;
+				if (!publicKey.verifySignature(tx.getRawDataToSign(i), inputs.get(i).signature)) {
 //					System.out.println("In 2");
 					isValid = false;
 					break;
