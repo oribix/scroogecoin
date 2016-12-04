@@ -100,6 +100,26 @@ public class BlockChain {
         
         if(isValid){
             //add block to block chain
+            UTXOPool uPool = new UTXOPool();
+            Transaction coinbase = b.getCoinbase();
+            
+            ArrayList<Transaction.Output> outputs = coinbase.getOutputs();
+            for(int i = 0; i < outputs.size(); i++){
+                UTXO utxoCoinbase = new UTXO(coinbase.getHash(), i);
+                uPool.addUTXO(utxoCoinbase, outputs.get(i));
+            }
+            
+            
+            
+            BlockNode blockNode = new BlockNode(b, maxHeightBlock, uPool);
+            
+            heads.add(blockNode);
+            
+            H.put(new ByteArrayWrapper(b.getHash()), blockNode);
+            
+            height++;
+            maxHeightBlock = blockNode;
+            //txPool = new TransactionPool();
         }
         
         return isValid;
