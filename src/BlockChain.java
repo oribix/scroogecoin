@@ -122,16 +122,14 @@ public class BlockChain {
     private boolean hasValidParent(BlockNode b) {
     	byte[] prevBlockHash = b.b.getPrevBlockHash();
     	boolean prevBlockExists = false;
-
+    	
     	if (prevBlockHash != null) {
-    		for (BlockNode bnHead : heads) {
-    			if (bnHead.b.getHash().equals(prevBlockHash)) {
-    				prevBlockExists = true;
-    				b.parent = bnHead;
-    				b.height = b.parent.height + 1;
-    				break;
-    			}
-    		}
+    	    BlockNode prevBlockNode = H.get(new ByteArrayWrapper(prevBlockHash));
+    	    if(prevBlockNode != null){
+    	        prevBlockExists = true;
+    	        b.parent = prevBlockNode;
+    	        b.height = b.parent.height + 1;
+    	    }
     	}
     	
     	return prevBlockExists;
