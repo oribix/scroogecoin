@@ -28,7 +28,7 @@ public class TxHandler {
 		double txInputSum = 0.0;
         double txOutputSum = 0.0;
 		
-		//create a list of claimed outputs
+		//create a list of claimed outputs (inputs claim outputs)
 		ArrayList<UTXO> claimedOutputs = new ArrayList<UTXO>();
 		for (Transaction.Input input : tx.getInputs()) {
             UTXO claimedOutput = new UTXO(input.prevTxHash, input.outputIndex);
@@ -49,7 +49,10 @@ public class TxHandler {
 			ArrayList<Transaction.Input> inputs = tx.getInputs();
 			for(int i = 0; i < inputs.size(); i++) {
 				RSAKey publicKey = publicLedger.getTxOutput(claimedOutputs.get(i)).address;
-				if (!publicKey.verifySignature(tx.getRawDataToSign(i), inputs.get(i).signature)) {
+				byte[] rawData = tx.getRawDataToSign(i);
+				byte[] signature = inputs.get(i).signature;
+				if (publicKey == null || rawData == null || signature == null || 
+						!publicKey.verifySignature(rawData, inputs.get(i).signature)) {
 //					System.out.println("In 2");
 					isValid = false;
 					break;
@@ -106,7 +109,8 @@ public class TxHandler {
 	 */
 	public Transaction[] handleTxs(Transaction[] possibleTxs) {
 	    //TODO: Still need to update UTXO pool "as necessary"
-		ArrayList<Transaction> acceptedTxs = new ArrayList<Transaction>(); 
+		ArrayList<Transaction> acceptedTxs = new ArrayList<Transaction>();
+//		System.out.println("Size: " + possibleTxs.length);
 		for(Transaction tx : possibleTxs){
 		    if (isValidTx(tx)) {
                 //add tx to list of accepted transactions

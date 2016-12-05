@@ -106,13 +106,18 @@ public class DropboxTestBlockChain {
          
          for (int j = 0; j < maxUTXOTxOutput; j++) {
             int rIndex = SampleRandom.randomInt(people.size());
+//            System.out.print("People: " + rIndex);
             RSAKey addr = people.get(rIndex).getPublicKey();
             double value = SampleRandom.randomDouble(maxValue);
-            if (totalValue + value > Block.COINBASE)
+            if (totalValue + value > Block.COINBASE) {
+//            	System.out.println();
                break;
+            }
+//            System.out.print(", " + value);
             spendCoinbaseTx.addOutput(value, addr);
             keyPairAtIndex.put(j, people.get(rIndex));
             totalValue += value;
+//            System.out.println(" -> " + totalValue);
             numOutputs++;
          }
          
