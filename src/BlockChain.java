@@ -70,7 +70,7 @@ public class BlockChain {
      * max height block
      */
     public UTXOPool getMaxHeightUTXOPool() {
-        return maxHeightBlock.uPool;
+        return maxHeightBlock.getUTXOPoolCopy();
     }
 
     /* Get the transaction pool to mine a new block
