@@ -87,13 +87,8 @@ public class BlockChain {
      * As soon as height > CUT_OFF_AGE + 1, you cannot create a new block at height 2.
      */
     private boolean blockValid(BlockNode b){
-    	boolean isValid = true;
-    	
     	// Check that height is valid
-    	if (b.height <= height - CUT_OFF_AGE) {
-    		System.out.println("In bool check");
-    		isValid = false;
-    	}
+    	boolean isValid = b.height > height - CUT_OFF_AGE;
     	
     	if (isValid) {
     		
@@ -101,7 +96,6 @@ public class BlockChain {
 		    ArrayList<Transaction> blockTxs = b.b.getTransactions(); 
 		    Transaction[] txs = handler.handleTxs(blockTxs.toArray(new Transaction[blockTxs.size()]));
 		    if (txs.length != b.b.getTransactions().size()) {
-		    	System.out.println("In handleTxs");
 		    	isValid = false;
 		    }
 		    
@@ -154,10 +148,9 @@ public class BlockChain {
         
         // Remove transactions from transaction pool
         for (Transaction t : blockNode.b.getTransactions()){
-            Transaction fromTx = txPool.getTransaction(t.getHash());
-            if (fromTx != null)
-                txPool.removeTransaction(t.getHash());
+            txPool.removeTransaction(t.getHash());
         }
+        
         return true;
     }
 
