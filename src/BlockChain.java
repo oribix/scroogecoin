@@ -57,7 +57,7 @@ public class BlockChain {
         H.put(new ByteArrayWrapper(genesisBlock.getHash()), genesis);      
         height = 1;      
         maxHeightBlock = genesis;      
-        txPool = new TransactionPool(); 
+        txPool = new TransactionPool();
     }
 
     /* Get the maximum height block
@@ -89,32 +89,52 @@ public class BlockChain {
     private boolean blockValid(BlockNode b){
     	boolean isValid = true;
     	
-//    	ArrayList<Transaction> transactions = txPool.getTransactions();
-//    	UTXOPool utxoPool = new UTXOPool();
-//    	
-//    	// Initialize a UTXOPool from txPool for txHandler
-//    	for (int i = 0; i < transactions.size(); i++) {
-//    		Transaction t = transactions.get(i);
-//    		ArrayList<Transaction.Output> outputs = t.getOutputs();
-//    		for (int j = 0; j < outputs.size(); j++) {
-//	    		UTXO utxo = new UTXO(t.getHash(), j);
-//	    		utxoPool.addUTXO(utxo, outputs.get(j));
-//    		}
-//    	}
+    	// Check that height is valid
+//    	if (height > CUT_OFF_AGE + 1) {
+    	if (height <= maxHeightBlock.height - CUT_OFF_AGE) {
+    		System.out.println("In bool check");
+    		isValid = false;
+    	}
     	
-//    	if (height > CUT_OFF_AGE + 1)
-//    		isValid = false;
-//    	
-//    	if (isValid) {
-//		    TxHandler handler = new TxHandler(b.uPool);
-//		    for (Transaction t : b.b.getTransactions()) {
-//		    	if (!handler.isValidTx(t)) {
-//		    		isValid = false;
-//		    		break;
-//		    	}		
-//		    }
-//    	}
+    	if (isValid) {
+    		
+		    TxHandler handler = new TxHandler(b.parent.uPool);
+		    ArrayList<Transaction> blockTxs = b.b.getTransactions(); 
+		    Transaction[] txs = handler.handleTxs(blockTxs.toArray(new Transaction[blockTxs.size()]));
+		    if (txs.length != b.b.getTransactions().size()) {
+		    	System.out.println("In handleTxs");
+		    	isValid = false;
+		    }
+		    
+		    for (Transaction tx : txs) {
+		    	ArrayList<Transaction.Output> outputs = tx.getOutputs();
+		    	for (int i = 0; i < outputs.size(); i++) {
+		    		UTXO utxo = new UTXO(tx.getHash(), i);
+		    		b.uPool.addUTXO(utxo, outputs.get(i));
+		    	}
+		    }
+    	}
         return isValid;
+    }
+    
+    // Check that prevBlockHash is valid. If it is, we change parent, height values.
+    // Made this function because changing blocknode b in blockValid() is...not ok.
+    private boolean hasValidParent(BlockNode b) {
+    	byte[] prevBlockHash = b.b.getPrevBlockHash();
+    	boolean prevBlockExists = false;
+
+    	if (prevBlockHash != null) {
+    		for (BlockNode bnHead : heads) {
+    			if (bnHead.b.getHash().equals(prevBlockHash)) {
+    				prevBlockExists = true;
+    				b.parent = bnHead;
+    				b.height = b.parent.height + 1;
+    				break;
+    			}
+    		}
+    	}
+    	
+    	return prevBlockExists;
     }
     
     /* Add a block to block chain if it is valid.
@@ -131,20 +151,21 @@ public class BlockChain {
         }
         
         BlockNode blockNode = new BlockNode(b, maxHeightBlock, uPool);
-        
-        boolean isValid = blockValid(blockNode);
+        boolean isValid = hasValidParent(blockNode) && blockValid(blockNode);
         
         if(isValid){
-            //add block to block chain
-            
-            
+            //add block to block chain    
             heads.add(blockNode);
-            
             H.put(new ByteArrayWrapper(b.getHash()), blockNode);
+            	
+            //height++;
+            //maxHeightBlock = blockNode;
+            if(blockNode.height > height){
+                height = blockNode.height;
+                maxHeightBlock = blockNode;
+            }
             
-            height++;
-            maxHeightBlock = blockNode;
-            
+            // Remove transactions from transaction pool
             for (Transaction t : blockNode.b.getTransactions()){
             	Transaction fromTx = txPool.getTransaction(t.getHash());
             	if (fromTx != null)
