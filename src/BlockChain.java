@@ -90,7 +90,6 @@ public class BlockChain {
     	boolean isValid = true;
     	
     	// Check that height is valid
-//    	if (height > CUT_OFF_AGE + 1) {
     	if (height <= maxHeightBlock.height - CUT_OFF_AGE) {
     		System.out.println("In bool check");
     		isValid = false;
@@ -117,67 +116,53 @@ public class BlockChain {
         return isValid;
     }
     
-    // Check that prevBlockHash is valid. If it is, we change parent, height values.
-    // Made this function because changing blocknode b in blockValid() is...not ok.
-    private boolean hasValidParent(BlockNode b) {
-    	byte[] prevBlockHash = b.b.getPrevBlockHash();
-    	boolean prevBlockExists = false;
-    	
-    	if (prevBlockHash != null) {
-    	    BlockNode prevBlockNode = H.get(new ByteArrayWrapper(prevBlockHash));
-    	    if(prevBlockNode != null){
-    	        prevBlockExists = true;
-    	        b.parent = prevBlockNode;
-    	        b.height = b.parent.height + 1;
-    	    }
-    	}
-    	
-    	return prevBlockExists;
-    }
-    
     /* Add a block to block chain if it is valid.
      * Return true of block is successfully added
      */
     public boolean addBlock(Block b) {
+        
+        //get previous block hash
+        byte[] prevBlockHash = b.getPrevBlockHash();
+        if (prevBlockHash == null) return false;
+        
+        //get previous block node
+        BlockNode prevBlockNode = H.get(new ByteArrayWrapper(prevBlockHash));
+        if (prevBlockNode == null) return false;
+        
+        //construct UTXOPool
         UTXOPool uPool = new UTXOPool();
         Transaction coinbase = b.getCoinbase();
-        
         ArrayList<Transaction.Output> outputs = coinbase.getOutputs();
         for(int i = 0; i < outputs.size(); i++){
             UTXO utxoCoinbase = new UTXO(coinbase.getHash(), i);
             uPool.addUTXO(utxoCoinbase, outputs.get(i));
         }
         
-        BlockNode blockNode = new BlockNode(b, maxHeightBlock, uPool);
-        boolean isValid = hasValidParent(blockNode) && blockValid(blockNode);
+        //create new BlockNode to be added
+        BlockNode blockNode = new BlockNode(b, prevBlockNode, uPool);
+        if(!blockValid(blockNode)) return false;
         
-        if(isValid){
-            //add block to block chain    
-            heads.add(blockNode);
-            H.put(new ByteArrayWrapper(b.getHash()), blockNode);
-            	
-            //height++;
-            //maxHeightBlock = blockNode;
-            if(blockNode.height > height){
-                height = blockNode.height;
-                maxHeightBlock = blockNode;
-            }
-            
-            // Remove transactions from transaction pool
-            for (Transaction t : blockNode.b.getTransactions()){
-            	Transaction fromTx = txPool.getTransaction(t.getHash());
-            	if (fromTx != null)
-            		txPool.removeTransaction(t.getHash());
-            }
+        //add block to block chain
+        heads.add(blockNode);
+        H.put(new ByteArrayWrapper(b.getHash()), blockNode);
+        
+        //update block chain height and max height block
+        if(blockNode.height > height){
+            height = blockNode.height;
+            maxHeightBlock = blockNode;
         }
         
-        return isValid;
+        // Remove transactions from transaction pool
+        for (Transaction t : blockNode.b.getTransactions()){
+            Transaction fromTx = txPool.getTransaction(t.getHash());
+            if (fromTx != null)
+                txPool.removeTransaction(t.getHash());
+        }
+        return true;
     }
 
-    /* Add a transaction in transaction pool
-     */
+    //Add a transaction in transaction pool
     public void addTransaction(Transaction tx) {
-        // IMPLEMENT THIS
         txPool.addTransaction(tx);
         return;
     }
