@@ -90,7 +90,7 @@ public class BlockChain {
     	boolean isValid = true;
     	
     	// Check that height is valid
-    	if (height <= maxHeightBlock.height - CUT_OFF_AGE) {
+    	if (b.height <= height - CUT_OFF_AGE) {
     		System.out.println("In bool check");
     		isValid = false;
     	}
