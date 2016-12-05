@@ -91,21 +91,21 @@ public class BlockChain {
     	boolean isValid = b.height > height - CUT_OFF_AGE;
     	
     	if (isValid) {
-    		
 		    TxHandler handler = new TxHandler(b.parent.uPool);
 		    ArrayList<Transaction> blockTxs = b.b.getTransactions(); 
 		    Transaction[] txs = handler.handleTxs(blockTxs.toArray(new Transaction[blockTxs.size()]));
+		    
 		    if (txs.length != b.b.getTransactions().size()) {
-		    	isValid = false;
-		    }
+                isValid = false;
+            }
 		    
 		    for (Transaction tx : txs) {
-		    	ArrayList<Transaction.Output> outputs = tx.getOutputs();
-		    	for (int i = 0; i < outputs.size(); i++) {
-		    		UTXO utxo = new UTXO(tx.getHash(), i);
-		    		b.uPool.addUTXO(utxo, outputs.get(i));
-		    	}
-		    }
+                ArrayList<Transaction.Output> outputs = tx.getOutputs();
+                for (int i = 0; i < outputs.size(); i++) {
+                    UTXO utxo = new UTXO(tx.getHash(), i);
+                    b.uPool.addUTXO(utxo, outputs.get(i));
+                }
+            }
     	}
         return isValid;
     }
