@@ -13,3 +13,10 @@ Daniel worked on conditions 1 and 2 for isValidTx().
 
 Marco worked on conditions 1, 3, 4, and 5 for isValidTx(). 
 He also did handleTxs() and getUTXOPool().
+
+Part 2
+
+Daniel worked on most of the logic of blockValid() and part of addBlock().
+
+Marco worked on BlockChain(), getMaxHeightBlock(), getMaxHeightUTXOPool(), getTransactionPool(), 
+most of addBlock(), cleaning up blockValid(), and addTransaction().
