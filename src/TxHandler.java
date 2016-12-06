@@ -3,7 +3,7 @@ import java.util.HashSet;
 
 public class TxHandler {
 
-	UTXOPool publicLedger;
+	private UTXOPool publicLedger;
 	
 	/* Creates a public ledger whose current UTXOPool (collection of unspent 
 	 * transaction outputs) is utxoPool. This should make a defensive copy of 

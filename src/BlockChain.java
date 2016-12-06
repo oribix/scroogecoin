@@ -106,6 +106,12 @@ public class BlockChain {
                     b.uPool.addUTXO(utxo, outputs.get(i));
                 }
             }
+		    
+		    ArrayList<UTXO> utxos = handler.getUTXOPool().getAllUTXO();
+		    UTXOPool parentPool = b.parent.uPool;
+		    for (UTXO utxo : utxos)
+		    	if (parentPool.contains(utxo))
+		    		b.uPool.addUTXO(utxo, parentPool.getTxOutput(utxo));
     	}
         return isValid;
     }
