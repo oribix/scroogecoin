@@ -132,6 +132,12 @@ public class BlockChain {
             uPool.addUTXO(utxoCoinbase, outputs.get(i));
         }
         
+        //experimental
+        UTXOPool prevPool = prevBlockNode.uPool;
+        for(UTXO utxo : prevPool.getAllUTXO()){
+            uPool.addUTXO(utxo, prevPool.getTxOutput(utxo));
+        }
+        
         //create new BlockNode to be added
         BlockNode blockNode = new BlockNode(b, prevBlockNode, uPool);
         if(!blockValid(blockNode)) return false;
