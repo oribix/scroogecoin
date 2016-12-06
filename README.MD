@@ -1,6 +1,6 @@
 CS 165 Assignment2
 
-Marco Morelos  <SID>
+Marco Morelos  861109791
 
 Daniel Handojo 861129016
 
@@ -20,3 +20,5 @@ Daniel worked on most of the logic of blockValid() and part of addBlock().
 
 Marco worked on BlockChain(), getMaxHeightBlock(), getMaxHeightUTXOPool(), getTransactionPool(), 
 most of addBlock(), cleaning up blockValid(), and addTransaction().
+
+See commit history at https://github.com/oribix/scroogecoin for a comprehensive contribution log.
